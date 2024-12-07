@@ -31,7 +31,6 @@
             pname = "particles";
             version = "0.1.0";
             src = ./source;
-
             outputs = [
               "out"
               "development"

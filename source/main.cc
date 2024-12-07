@@ -1247,9 +1247,12 @@ private:
 
     VkInstanceCreateInfo createInfo{
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
         .pApplicationInfo = &appInfo,
+        .enabledLayerCount = 0,
         .enabledExtensionCount = static_cast<u32>(extensions.size()),
         .ppEnabledExtensionNames = extensions.data(),
+
     };
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
@@ -1257,13 +1260,9 @@ private:
     if (enableValidationLayers) {
       createInfo.enabledLayerCount = static_cast<u32>(validationLayers.size());
       createInfo.ppEnabledLayerNames = validationLayers.data();
-
       populateDebugMessengerCreateInfo(debugCreateInfo);
       createInfo.pNext =
           (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
-    } else {
-      createInfo.enabledLayerCount = 0;
-      createInfo.pNext = nullptr;
     }
 
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
@@ -1311,6 +1310,10 @@ private:
       extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
+    // NOTE: This is required to support non-conforming Vulkan implementations
+    // such as MoltenVK on MacOS
+    extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+
     return extensions;
   }
 
@@ -1348,34 +1351,23 @@ private:
     return VK_FALSE;
   }
 
-  // static std::vector<char> readFile(const std::string &filename) {
-  //   std::ifstream file(filename, std::ios::ate | std::ios::binary);
+  static std::vector<char> readFile(const std::string &filename) {
+    std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
-  //   if (!file.is_open()) {
-  //     throw std::runtime_error("failed to open file!");
-  //   }
-
-  //   return std::vector<char>(std::istreambuf_iterator<char>(file),
-  //                            std::istreambuf_iterator<char>());
-  // }
-
-    static std::vector<char> readFile(const std::string& filename) {
-        std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-        if (!file.is_open()) {
-            throw std::runtime_error("failed to open file!");
-        }
-
-        size_t fileSize = (size_t) file.tellg();
-        std::vector<char> buffer(fileSize);
-
-        file.seekg(0);
-        file.read(buffer.data(), fileSize);
-
-        file.close();
-
-        return buffer;
+    if (!file.is_open()) {
+      throw std::runtime_error("failed to open file!");
     }
+
+    std::streamsize fileSize = file.tellg();
+    std::vector<char> buffer(static_cast<usize>(fileSize));
+
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+
+    file.close();
+
+    return buffer;
+  }
 
   void cleanup() {
     cleanupSwapChain();
