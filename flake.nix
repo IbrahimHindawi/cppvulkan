@@ -19,18 +19,24 @@
           llvm = pkgs.llvmPackages_19;
           stdenv = llvm.stdenv;
 
-          vulkan-validation-layers = pkgs.callPackage ./vvl.nix { inherit stdenv; };
           glfw = pkgs.glfw.overrideAttrs {
             env.NIX_CFLAGS_COMPILE = toString [
               "-D_GLFW_VULKAN_LIBRARY=\"${lib.getLib pkgs.vulkan-loader}/lib/libvulkan.1.dylib\""
             ];
           };
+
+          vulkan-validation-layers =
+            if stdenv.isDarwin then
+              pkgs.callPackage ./vvl.nix { inherit stdenv; }
+            else
+              pkgs.vulkan-vulkan-validation-layers;
         in
         {
           packages.particles = stdenv.mkDerivation {
             pname = "particles";
             version = "0.1.0";
             src = ./source;
+
             outputs = [
               "out"
               "development"

@@ -80,7 +80,8 @@ const std::vector<Vertex> vertices = {
     {{-0.5f, -0.5f, 0.f}, {1.0f, 0.0f, 0.0f}},
     {{0.5f, -0.5f, 0.f}, {0.0f, 1.0f, 0.0f}},
     {{0.5f, 0.5f, 0.f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f, 0.f}, {1.0f, 1.0f, 1.0f}}};
+    {{-0.5f, 0.5f, 0.f}, {1.0f, 1.0f, 1.0f}},
+};
 
 const std::vector<u16> indices = {0, 1, 2, 2, 3, 0};
 
@@ -706,8 +707,8 @@ private:
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                            pipelineLayout, 0, 1,
-                            &descriptorSets[currentFrame], 0, nullptr);
+                            pipelineLayout, 0, 1, &descriptorSets[currentFrame],
+                            0, nullptr);
 
     // vkCmdDraw(commandBuffer, 3, 1, 0, 0);
     vkCmdDrawIndexed(commandBuffer, static_cast<u32>(indices.size()), 1, 0, 0,
@@ -1129,8 +1130,7 @@ private:
       }
 
       VkBool32 presentSupport = false;
-      vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface,
-                                           &presentSupport);
+      vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 
       if (presentSupport) {
         indices.presentFamily = i;
@@ -1185,8 +1185,7 @@ private:
     }
 
     vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
-    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0,
-                     &graphicsQueue);
+    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
   }
 
   void pickPhysicalDevice() {
@@ -1261,8 +1260,7 @@ private:
       createInfo.enabledLayerCount = static_cast<u32>(validationLayers.size());
       createInfo.ppEnabledLayerNames = validationLayers.data();
       populateDebugMessengerCreateInfo(debugCreateInfo);
-      createInfo.pNext =
-          (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+      createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
     }
 
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
