@@ -12,7 +12,6 @@ add_subdirectory(extern)
 
 add_executable(${PROJECT_NAME}
     source/main.cc
-    source/fileops.cc
 )
 find_package(Vulkan REQUIRED)
 
