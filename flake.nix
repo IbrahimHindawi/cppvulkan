@@ -52,6 +52,7 @@
                   vulkan-headers
                   vulkan-loader
                   glm
+                  stb
                   ;
 
                 inherit glfw vulkan-validation-layers;
