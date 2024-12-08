@@ -19,6 +19,7 @@ include_directories(source/)
 include_directories($ENV{VULKAN_SDK}/Include)
 include_directories(extern/haikal/src)
 include_directories(extern/glfw/include)
+include_directories(extern/stb)
 # cmake_print_properties(TARGETS ${PROJECT_NAME} PROPERTIES LOCATION INCLUDE_DIRECTORIES)
 
 target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
